@@ -22,7 +22,7 @@
             <th>Capitalización</th>
             <th>Plazo (años)</th>
             <th>Frecuencia</th>
-            <th>Gracia</th>
+            <th>Periodos de gracia</th>
             <th>Acciones</th>
           </tr>
           </thead>
@@ -36,7 +36,9 @@
             <td>{{ bono.capitalizacion || '-' }}</td>
             <td>{{ bono.plazo }}</td>
             <td>{{ bono.frecuencia }}</td>
-            <td>{{ bono.gracia }}</td>
+            <td>
+              {{ formatGraciasPeriodos(bono.gracias_periodos) }}
+            </td>
             <td>
               <button class="delete-btn" @click="eliminarBono(bono.id)">Eliminar</button>
             </td>
@@ -76,6 +78,12 @@ export default {
       } catch (e) {
         alert('Error al eliminar el bono.')
       }
+    },
+    formatGraciasPeriodos(gracias_periodos) {
+      if (!gracias_periodos || !gracias_periodos.length) return '-'
+      return gracias_periodos
+          .map(gp => `${gp.tipo.charAt(0).toUpperCase() + gp.tipo.slice(1)} (${gp.cantidad})`)
+          .join(', ')
     },
     logout() {
       localStorage.removeItem('usuarioActual')

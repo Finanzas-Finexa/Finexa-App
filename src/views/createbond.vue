@@ -46,8 +46,21 @@
             <Dropdown id="frecuencia" v-model="frecuencia" :options="frecuencias" optionLabel="label" optionValue="value" />
           </div>
           <div class="p-field">
-            <label for="gracia">Plazo de gracia</label>
+            <label for="gracia">Periodos de gracia</label>
             <Dropdown id="gracia" v-model="gracia" :options="gracias" optionLabel="label" optionValue="value" />
+          </div>
+          <div class="p-field" v-if="gracia !== 'ninguna'">
+            <label for="graciaPeriodos">Cantidad de periodos de gracia</label>
+            <InputNumber id="graciaPeriodos" v-model="graciaPeriodos" :min="1" placeholder="Ej: 2" />
+          </div>
+          <div class="p-field">
+            <label>Periodos de gracia</label>
+            <div v-for="(gp, idx) in graciasPeriodos" :key="idx" class="gracia-row">
+              <Dropdown v-model="gp.tipo" :options="gracias" optionLabel="label" optionValue="value" class="gracia-dropdown" />
+              <InputNumber v-model="gp.cantidad" :min="1" placeholder="Cantidad" class="gracia-input" />
+              <Button icon="pi pi-trash" class="p-button-danger p-button-sm" @click="eliminarGracia(idx)" v-if="graciasPeriodos.length > 1" />
+            </div>
+            <Button label="Agregar periodo de gracia" class="p-button-text p-button-sm mt-2" @click="agregarGracia" />
           </div>
           <div v-if="error" class="p-error mt-2">{{ error }}</div>
           <div v-if="exito" class="p-success mt-2">{{ exito }}</div>
@@ -103,6 +116,9 @@ export default {
         { label: 'Semestral', value: 'semestral' },
         { label: 'Anual', value: 'anual' }
       ],
+      graciasPeriodos: [
+        { tipo: 'ninguna', cantidad: 1 }
+      ],
       gracias: [
         { label: 'Ninguna', value: 'ninguna' },
         { label: 'Parcial', value: 'parcial' },
@@ -111,12 +127,29 @@ export default {
     }
   },
   methods: {
+    agregarGracia() {
+      this.graciasPeriodos.push({ tipo: 'ninguna', cantidad: 1 })
+    },
+    eliminarGracia(idx) {
+      this.graciasPeriodos.splice(idx, 1)
+    },
     async crearBono() {
       this.error = ''
       this.exito = ''
       if (!this.nombre || !this.monto || !this.tasa || !this.plazo) {
         this.error = 'Completa todos los campos obligatorios.'
         return
+      }
+      if (this.gracia !== 'ninguna' && (!this.graciaPeriodos || this.graciaPeriodos < 1)) {
+        this.error = 'Indica la cantidad de periodos de gracia.'
+        return
+      }
+      for (const gp of this.graciasPeriodos) {
+        if (gp.tipo === 'ninguna') continue
+        if (!gp.cantidad || gp.cantidad < 1) {
+          this.error = 'Indica la cantidad de periodos para cada tipo de gracia.'
+          return
+        }
       }
       const nuevoBono = {
         nombre: this.nombre,
@@ -129,6 +162,8 @@ export default {
         frecuencia: this.frecuencia,
         amortizacion: 'francesa',
         gracia: this.gracia,
+        gracia_periodos: this.gracia !== 'ninguna' ? Number(this.graciaPeriodos) : 0,
+        gracias_periodos: this.graciasPeriodos.filter(gp => gp.tipo !== 'ninguna'),
         created_at: new Date().toISOString()
       }
       try {
@@ -235,7 +270,15 @@ h2 {
   font-weight: 500;
 }
 
-
+.gracia-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.5rem;
+}
+.gracia-dropdown, .gracia-input {
+  min-width: 120px;
+}
 @media (max-width: 768px) {
   .navbar {
     flex-direction: column;

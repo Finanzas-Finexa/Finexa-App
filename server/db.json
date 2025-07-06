@@ -28,18 +28,50 @@
   ],
   "bonds": [
     {
-      "id": "9dfd",
-      "nombre": "Bono 1",
-      "moneda": "PEN",
-      "monto": 256,
-      "tasa": 14,
+      "id": "326b",
+      "nombre": "Bono 2",
+      "moneda": "EUR",
+      "monto": 25000,
+      "tasa": 3,
       "tipo_tasa": "nominal",
-      "capitalizacion": "cuatrimestral",
+      "capitalizacion": "trimestral",
       "plazo": 9,
-      "frecuencia": "cuatrimestral",
+      "frecuencia": "trimestral",
       "amortizacion": "francesa",
       "gracia": "parcial",
-      "created_at": "2025-07-06T00:35:53.646Z"
+      "gracia_periodos": 3,
+      "gracias_periodos": [
+        {
+          "tipo": "total",
+          "cantidad": 2
+        }
+      ],
+      "created_at": "2025-07-06T01:44:20.872Z"
+    },
+    {
+      "id": "8976",
+      "nombre": "Bono 3",
+      "moneda": "USD",
+      "monto": 10500,
+      "tasa": 4,
+      "tipo_tasa": "nominal",
+      "capitalizacion": "semestral",
+      "plazo": 7,
+      "frecuencia": "anual",
+      "amortizacion": "francesa",
+      "gracia": "parcial",
+      "gracia_periodos": 3,
+      "gracias_periodos": [
+        {
+          "tipo": "total",
+          "cantidad": 3
+        },
+        {
+          "tipo": "parcial",
+          "cantidad": 5
+        }
+      ],
+      "created_at": "2025-07-06T02:02:26.861Z"
     }
   ],
   "bond_configurations": [
