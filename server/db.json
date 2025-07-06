@@ -1,0 +1,103 @@
+{
+  "users": [
+    {
+      "user_id": 1,
+      "username": "usuario1",
+      "password_hash": "hash123",
+      "email": "usuario1@email.com",
+      "rol": true,
+      "created_at": "2024-06-01T12:00:00Z",
+      "id": "d4de"
+    },
+    {
+      "id": "bafd",
+      "username": "Ronaldo",
+      "password_hash": "true",
+      "email": "ronaldo@gmail.com",
+      "rol": true,
+      "created_at": "2025-07-05T23:40:02.589Z"
+    },
+    {
+      "id": "bjfd",
+      "username": "Hola",
+      "password_hash": "Holaaaa",
+      "email": "hola@gmail.com",
+      "rol": true,
+      "created_at": "2025-07-05T23:40:02.600Z"
+    }
+  ],
+  "bonds": [
+    {
+      "bond_id": 1,
+      "user_id": 1,
+      "name": "Bono Ejemplo",
+      "principal": 10000,
+      "issue_date": "2024-06-01",
+      "term_years": 5,
+      "frequency": "anual",
+      "amortization": "francesa",
+      "created_at": "2024-06-01T12:00:00Z",
+      "grace_period_types_grace_type_id": 1,
+      "id": "54a7"
+    }
+  ],
+  "bond_configurations": [
+    {
+      "config_id": 1,
+      "bond_id": 1,
+      "currency": "PEN",
+      "interest_type": "nominal",
+      "nominal_rate": 0.08,
+      "capitalization": "anual",
+      "effective_rate": 0.0825,
+      "id": "a049"
+    }
+  ],
+  "cash_flows": [
+    {
+      "cashflow_id": 1,
+      "bond_id": 1,
+      "period_number": 1,
+      "payment_date": "2025-06-01",
+      "interest_payment": 800,
+      "principal_payment": 2000,
+      "total_payment": 2800,
+      "remaining_balance": 8000,
+      "grace_applied": false,
+      "id": "8db7"
+    }
+  ],
+  "financial_results": [
+    {
+      "result_id": 1,
+      "bond_id": 1,
+      "tcea": 0.085,
+      "trea": 0.083,
+      "duration": 4.5,
+      "mod_duration": 4.3,
+      "convexity": 20,
+      "max_price": 10500,
+      "calculated_at": "2024-06-01T12:00:00Z",
+      "id": "4a3e"
+    }
+  ],
+  "bond_changes": [
+    {
+      "change_id": 1,
+      "bond_id": 1,
+      "field_changed": "principal",
+      "old_value": "10000.00",
+      "new_value": "12000.00",
+      "changed_at": "2024-06-02T10:00:00Z",
+      "id": "c7ae"
+    }
+  ],
+  "grace_period_types": [
+    {
+      "grace_type_id": 1,
+      "name": "Total",
+      "period": 2,
+      "id": "5502"
+    }
+  ]
+}

@@ -4,13 +4,15 @@ import Login from '../views/login-page.vue'
 import Register from '../views/register-page.vue'
 import DashboardPrestamista from '../views/dashboardprestamista.vue'
 import DashboardPrestatario from '../views/dashboardprestatario.vue'
+import Createbond from "@/views/createbond.vue";
 
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-  { path: '/prestamista', component: DashboardPrestamista },
-  { path: '/prestatario', component: DashboardPrestatario },
+  { path: '/bonista', component: DashboardPrestamista },
+  { path: '/inversor', component: DashboardPrestatario },
+  { path: '/createbond', component: Createbond },
 ]
 
 const router = createRouter({

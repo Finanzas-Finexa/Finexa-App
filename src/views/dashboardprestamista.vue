@@ -1,8 +1,11 @@
 <template>
   <div class="dashboard-bg">
     <nav class="navbar">
-      <span class="navbar-title">Dashboard Prestamista</span>
-      <button class="logout-btn" @click="logout">Cerrar sesión</button>
+      <span class="navbar-title">Dashboard Bonista</span>
+      <div class="navbar-actions">
+        <button class="create-bond-btn" @click="$router.push('/createbond')">Crear Bono</button>
+        <button class="logout-btn" @click="logout">Cerrar sesión</button>
+      </div>
     </nav>
     <div class="dashboard-content">
       <h2>Bienvenido, Bonista</h2>
@@ -16,6 +19,7 @@ export default {
   name: 'dashboard-prestamista',
   methods: {
     logout() {
+      localStorage.removeItem('usuarioActual')
       this.$router.push('/login')
     }
   }
@@ -42,6 +46,26 @@ export default {
   font-size: 1.4rem;
   font-weight: bold;
   letter-spacing: 1px;
+}
+.navbar-actions {
+  display: flex;
+  gap: 1rem;
+}
+.create-bond-btn {
+  background: #fff;
+  color: #388e3c;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(56, 142, 60, 0.08);
+}
+.create-bond-btn:hover {
+  background: #388e3c;
+  color: #fff;
 }
 .logout-btn {
   background: #fff;
@@ -75,8 +99,6 @@ export default {
 .dashboard-content p {
   font-size: 1.2rem;
 }
-
-/* Responsive */
 @media (max-width: 700px) {
   .navbar {
     flex-direction: column;
@@ -88,6 +110,11 @@ export default {
     font-size: 1.1rem;
     margin-bottom: 0.5rem;
   }
+  .navbar-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .create-bond-btn,
   .logout-btn {
     width: 100%;
     font-size: 1rem;

@@ -3,8 +3,7 @@
     <div class="login-card">
       <h2>Iniciar sesión</h2>
       <form @submit.prevent="login">
-        <InputText v-model="usuario" placeholder="Usuario" class="input" />
-        <Password v-model="contrasena" placeholder="Contraseña" class="input" toggleMask />
+        <InputText v-model="email" placeholder="Correo electrónico" class="input" type="email" />        <Password v-model="contrasena" placeholder="Contraseña" class="input" toggleMask />
         <Button label="Ingresar" type="submit" class="login-btn" />
       </form>
       <router-link to="/register" class="register-link">¿No tienes cuenta? Regístrate</router-link>
@@ -21,23 +20,33 @@ export default {
   components: { InputText, Password, Button },
   data() {
     return {
-      usuario: '',
+      email: '',
       contrasena: ''
     }
   },
   methods: {
-    login() {
-      const usuarios = JSON.parse(localStorage.getItem('usuarios')) || []
-      const user = usuarios.find(u => u.usuario === this.usuario && u.contrasena === this.contrasena)
-      if (user) {
-        alert(`Bienvenido, ${user.usuario}`)
-        if (user.tipo === 'prestamista') {
-          this.$router.push('/prestamista')
+    async login() {
+      try {
+        const res = await fetch(`http://localhost:3000/users?email=${encodeURIComponent(this.email)}&password_hash=${encodeURIComponent(this.contrasena)}`)
+        const users = await res.json()
+        if (users.length > 0) {
+          const user = users[0]
+          localStorage.setItem('usuarioActual', JSON.stringify({
+            id: user.id,
+            username: user.username,
+            rol: user.rol
+          }))
+          alert(`Bienvenido, ${user.username}`)
+          if (user.rol) {
+            this.$router.push('/bonista')
+          } else {
+            this.$router.push('/inversor')
+          }
         } else {
-          this.$router.push('/prestatario')
+          alert('Correo o contraseña incorrecta')
         }
-      } else {
-        alert('Usuario o contraseña incorrecta')
+      } catch (e) {
+        alert('Error al iniciar sesión')
       }
     }
   }

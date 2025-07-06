@@ -12,11 +12,15 @@
           <input v-model="contrasena" type="password" placeholder="Contraseña" required class="input" />
         </div>
         <div class="form-group">
+          <label>Email:</label>
+          <input v-model="email" type="email" placeholder="Correo electrónico" required class="input" />
+        </div>
+        <div class="form-group">
           <label>Tipo de cuenta:</label>
           <select v-model="tipo" required class="input">
             <option disabled value="">Selecciona tipo de usuario</option>
-            <option value="prestamista">Bonista</option>
-            <option value="prestatario">Inversor</option>
+            <option value="Bonista">Bonista</option>
+            <option value="Inversor">Inversor</option>
           </select>
         </div>
         <button type="submit" class="register-btn">Registrar</button>
@@ -32,25 +36,40 @@ export default {
     return {
       usuario: '',
       contrasena: '',
-      tipo: ''
+      tipo: '',
+      email: ''
     }
   },
   methods: {
-    registrar() {
+    async registrar() {
       if (!this.tipo) {
-        alert('Por favor, selecciona un tipo de usuario (prestamista o prestatario).')
+        alert('Por favor, selecciona un tipo de usuario.')
         return
       }
-      const nuevoUsuario = {
-        usuario: this.usuario,
-        contrasena: this.contrasena,
-        tipo: this.tipo
+      if (!this.email) {
+        alert('Por favor, ingresa un correo electrónico.')
+        return
       }
-      const usuarios = JSON.parse(localStorage.getItem('usuarios')) || []
-      usuarios.push(nuevoUsuario)
-      localStorage.setItem('usuarios', JSON.stringify(usuarios))
-      alert('Registro exitoso')
-      this.$router.push('/login')
+      // Mapea el tipo a rol booleano
+      const rol = this.tipo === 'Bonista'
+      const nuevoUsuario = {
+        username: this.usuario,
+        password_hash: this.contrasena,
+        email: this.email,
+        rol,
+        created_at: new Date().toISOString()
+      }
+      try {
+        await fetch('http://localhost:3000/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(nuevoUsuario)
+        })
+        alert('Registro exitoso')
+        this.$router.push('/login')
+      } catch (e) {
+        alert('Error al registrar usuario')
+      }
     }
   }
 }

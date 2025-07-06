@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-bg">
     <nav class="navbar">
-      <span class="navbar-title">Dashboard Prestatario</span>
+      <span class="navbar-title">Dashboard Inversor</span>
       <button class="logout-btn" @click="logout">Cerrar sesión</button>
     </nav>
     <div class="dashboard-content">
@@ -16,6 +16,7 @@ export default {
   name: 'dashboard-prestatario',
   methods: {
     logout() {
+      localStorage.removeItem('usuarioActual')
       this.$router.push('/login')
     }
   }
