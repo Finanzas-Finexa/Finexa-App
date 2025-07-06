@@ -36,11 +36,12 @@
             <td>{{ bono.capitalizacion || '-' }}</td>
             <td>{{ bono.plazo }}</td>
             <td>{{ bono.frecuencia }}</td>
-            <td>
-              {{ formatGraciasPeriodos(bono.gracias_periodos) }}
-            </td>
-            <td>
-              <button class="delete-btn" @click="eliminarBono(bono.id)">Eliminar</button>
+            <td>{{ formatGraciasPeriodos(bono.gracias_periodos) }}</td>
+            <td class="acciones-cell">
+              <div class="acciones-btns">
+                <button class="calculate-btn" @click="$router.push(`/resultemisor/${bono.id}`)">Calcular</button>
+                <button class="delete-btn" @click="eliminarBono(bono.id)">Eliminar</button>
+              </div>
             </td>
           </tr>
           </tbody>
@@ -92,7 +93,6 @@ export default {
   }
 }
 </script>
-
 
 <style scoped>
 .dashboard-bg {
@@ -160,26 +160,6 @@ export default {
   color: #1565c0;
   padding: 2.5rem 1.5rem;
 }
-.bonos-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  justify-content: center;
-  margin-top: 2rem;
-}
-.bono-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(21, 101, 192, 0.08);
-  padding: 1.5rem 1.2rem;
-  min-width: 260px;
-  max-width: 320px;
-  margin-bottom: 1rem;
-  color: #1565c0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
 .table-container {
   width: 100%;
   max-width: 1100px;
@@ -196,7 +176,8 @@ export default {
   font-size: 1.05rem;
   color: #1565c0;
 }
-.bonos-table th, .bonos-table td {
+.bonos-table th,
+.bonos-table td {
   padding: 0.8rem 0.7rem;
   text-align: center;
 }
@@ -206,27 +187,41 @@ export default {
   font-weight: 700;
   border-bottom: 2px solid #90caf9;
 }
-.bonos-table tr {
-  transition: background 0.2s;
+.bonos-table td {
+  border-bottom: 1px solid #e3f2fd;
 }
 .bonos-table tr:hover {
   background: #f1f8ff;
 }
-.bonos-table td {
-  border-bottom: 1px solid #e3f2fd;
+.acciones-cell {
+  display: flex;
+  justify-content: center;
 }
-.bono-card h3 {
-  margin-bottom: 0.5rem;
-  color: #1976d2;
-  font-size: 1.2rem;
+.acciones-btns {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.calculate-btn {
+  background: #0288d1;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.calculate-btn:hover {
+  background: #0277bd;
 }
 .delete-btn {
-  margin-top: 0.7rem;
   background: #d32f2f;
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s;
@@ -245,12 +240,12 @@ export default {
   .table-container {
     padding: 0.5rem;
   }
-  .bonos-table th, .bonos-table td {
+  .bonos-table th,
+  .bonos-table td {
     padding: 0.5rem 0.3rem;
     font-size: 0.95rem;
   }
 }
-
 @media (max-width: 700px) {
   .navbar {
     flex-direction: column;
