@@ -3,26 +3,46 @@
     <nav class="navbar">
       <span class="navbar-title">Dashboard Bonista</span>
       <div class="navbar-actions">
-        <Button class="create-bond-btn" @click="$router.push('/bonista')">Dashboard</button>
+        <button class="create-bond-btn" @click="$router.push('/bonista')">Dashboard</button>
         <button class="create-bond-btn" @click="$router.push('/createbond')">Crear Bono</button>
         <button class="logout-btn" @click="logout">Cerrar sesión</button>
       </div>
     </nav>
     <div class="dashboard-content">
       <h2>Bienvenido, Bonista</h2>
-      <div class="bonos-list">
-        <div v-for="bono in bonos" :key="bono.id" class="bono-card">
-          <h3>{{ bono.nombre }}</h3>
-          <p><b>Moneda:</b> {{ bono.moneda }}</p>
-          <p><b>Monto:</b> {{ bono.monto }}</p>
-          <p><b>Tasa:</b> {{ bono.tasa }}%</p>
-          <p><b>Tipo de tasa:</b> {{ bono.tipo_tasa }}</p>
-          <p v-if="bono.capitalizacion"><b>Capitalización:</b> {{ bono.capitalizacion }}</p>
-          <p><b>Plazo:</b> {{ bono.plazo }} años</p>
-          <p><b>Frecuencia:</b> {{ bono.frecuencia }}</p>
-          <p><b>Gracia:</b> {{ bono.gracia }}</p>
-          <button class="delete-btn" @click="eliminarBono(bono.id)">Eliminar</button>
-        </div>
+      <div class="table-container">
+        <table class="bonos-table">
+          <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Moneda</th>
+            <th>Monto</th>
+            <th>Tasa (%)</th>
+            <th>Tipo de tasa</th>
+            <th>Capitalización</th>
+            <th>Plazo (años)</th>
+            <th>Frecuencia</th>
+            <th>Gracia</th>
+            <th>Acciones</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr v-for="bono in bonos" :key="bono.id">
+            <td>{{ bono.nombre }}</td>
+            <td>{{ bono.moneda }}</td>
+            <td>{{ bono.monto }}</td>
+            <td>{{ bono.tasa }}</td>
+            <td>{{ bono.tipo_tasa }}</td>
+            <td>{{ bono.capitalizacion || '-' }}</td>
+            <td>{{ bono.plazo }}</td>
+            <td>{{ bono.frecuencia }}</td>
+            <td>{{ bono.gracia }}</td>
+            <td>
+              <button class="delete-btn" @click="eliminarBono(bono.id)">Eliminar</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -64,6 +84,7 @@ export default {
   }
 }
 </script>
+
 
 <style scoped>
 .dashboard-bg {
@@ -151,6 +172,41 @@ export default {
   flex-direction: column;
   gap: 0.4rem;
 }
+.table-container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 2rem auto 0 auto;
+  overflow-x: auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 24px rgba(21, 101, 192, 0.10);
+  padding: 1.5rem;
+}
+.bonos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.05rem;
+  color: #1565c0;
+}
+.bonos-table th, .bonos-table td {
+  padding: 0.8rem 0.7rem;
+  text-align: center;
+}
+.bonos-table th {
+  background: #e3f2fd;
+  color: #1976d2;
+  font-weight: 700;
+  border-bottom: 2px solid #90caf9;
+}
+.bonos-table tr {
+  transition: background 0.2s;
+}
+.bonos-table tr:hover {
+  background: #f1f8ff;
+}
+.bonos-table td {
+  border-bottom: 1px solid #e3f2fd;
+}
 .bono-card h3 {
   margin-bottom: 0.5rem;
   color: #1976d2;
@@ -177,6 +233,16 @@ export default {
 .dashboard-content p {
   font-size: 1.2rem;
 }
+@media (max-width: 900px) {
+  .table-container {
+    padding: 0.5rem;
+  }
+  .bonos-table th, .bonos-table td {
+    padding: 0.5rem 0.3rem;
+    font-size: 0.95rem;
+  }
+}
+
 @media (max-width: 700px) {
   .navbar {
     flex-direction: column;
