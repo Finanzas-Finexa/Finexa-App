@@ -3,6 +3,7 @@
     <nav class="navbar">
       <span class="navbar-title">Dashboard Bonista</span>
       <div class="navbar-actions">
+        <Button label="Dashboard" class="p-button-success create-bond-btn" @click="$router.push('/bonista')" />
         <Button label="Crear Bono" class="p-button-success create-bond-btn" @click="$router.push('/createbond')" />
         <Button label="Cerrar sesión" class="p-button-secondary logout-btn" @click="logout" />
       </div>
@@ -137,7 +138,7 @@ export default {
           body: JSON.stringify(nuevoBono)
         })
         this.exito = '✅ Bono creado exitosamente.'
-        setTimeout(() => this.$router.push('/bonos'), 1000)
+        setTimeout(() => this.$router.push('/bonista'), 1000)
       } catch (e) {
         this.error = '❌ Error al crear el bono.'
       }

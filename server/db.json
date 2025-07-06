@@ -28,17 +28,18 @@
   ],
   "bonds": [
     {
-      "bond_id": 1,
-      "user_id": 1,
-      "name": "Bono Ejemplo",
-      "principal": 10000,
-      "issue_date": "2024-06-01",
-      "term_years": 5,
-      "frequency": "anual",
-      "amortization": "francesa",
-      "created_at": "2024-06-01T12:00:00Z",
-      "grace_period_types_grace_type_id": 1,
-      "id": "54a7"
+      "id": "9dfd",
+      "nombre": "Hola",
+      "moneda": "PEN",
+      "monto": 256,
+      "tasa": 14,
+      "tipo_tasa": "nominal",
+      "capitalizacion": "cuatrimestral",
+      "plazo": 9,
+      "frecuencia": "cuatrimestral",
+      "amortizacion": "francesa",
+      "gracia": "parcial",
+      "created_at": "2025-07-06T00:35:53.646Z"
     }
   ],
   "bond_configurations": [

@@ -3,13 +3,27 @@
     <nav class="navbar">
       <span class="navbar-title">Dashboard Bonista</span>
       <div class="navbar-actions">
+        <Button class="create-bond-btn" @click="$router.push('/bonista')">Dashboard</button>
         <button class="create-bond-btn" @click="$router.push('/createbond')">Crear Bono</button>
         <button class="logout-btn" @click="logout">Cerrar sesión</button>
       </div>
     </nav>
     <div class="dashboard-content">
       <h2>Bienvenido, Bonista</h2>
-      <p>Aquí irá la calculadora de bono francés para bonista.</p>
+      <div class="bonos-list">
+        <div v-for="bono in bonos" :key="bono.id" class="bono-card">
+          <h3>{{ bono.nombre }}</h3>
+          <p><b>Moneda:</b> {{ bono.moneda }}</p>
+          <p><b>Monto:</b> {{ bono.monto }}</p>
+          <p><b>Tasa:</b> {{ bono.tasa }}%</p>
+          <p><b>Tipo de tasa:</b> {{ bono.tipo_tasa }}</p>
+          <p v-if="bono.capitalizacion"><b>Capitalización:</b> {{ bono.capitalizacion }}</p>
+          <p><b>Plazo:</b> {{ bono.plazo }} años</p>
+          <p><b>Frecuencia:</b> {{ bono.frecuencia }}</p>
+          <p><b>Gracia:</b> {{ bono.gracia }}</p>
+          <button class="delete-btn" @click="eliminarBono(bono.id)">Eliminar</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -17,7 +31,32 @@
 <script>
 export default {
   name: 'dashboard-prestamista',
+  data() {
+    return {
+      bonos: []
+    }
+  },
+  async mounted() {
+    await this.cargarBonos()
+  },
   methods: {
+    async cargarBonos() {
+      try {
+        const res = await fetch('http://localhost:3000/bonds')
+        this.bonos = await res.json()
+      } catch (e) {
+        this.bonos = []
+      }
+    },
+    async eliminarBono(id) {
+      if (!confirm('¿Seguro que deseas eliminar este bono?')) return
+      try {
+        await fetch(`http://localhost:3000/bonds/${id}`, { method: 'DELETE' })
+        this.bonos = this.bonos.filter(b => b.id !== id)
+      } catch (e) {
+        alert('Error al eliminar el bono.')
+      }
+    },
     logout() {
       localStorage.removeItem('usuarioActual')
       this.$router.push('/login')
@@ -91,6 +130,45 @@ export default {
   justify-content: center;
   color: #1565c0;
   padding: 2.5rem 1.5rem;
+}
+.bonos-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+.bono-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(21, 101, 192, 0.08);
+  padding: 1.5rem 1.2rem;
+  min-width: 260px;
+  max-width: 320px;
+  margin-bottom: 1rem;
+  color: #1565c0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.bono-card h3 {
+  margin-bottom: 0.5rem;
+  color: #1976d2;
+  font-size: 1.2rem;
+}
+.delete-btn {
+  margin-top: 0.7rem;
+  background: #d32f2f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.delete-btn:hover {
+  background: #b71c1c;
 }
 .dashboard-content h2 {
   margin-bottom: 1rem;
