@@ -32,6 +32,38 @@
       "email": "yo@gmail.com",
       "rol": true,
       "created_at": "2025-07-06T04:13:16.577Z"
+    },
+    {
+      "id": "2a69",
+      "username": "Diego Cano",
+      "password_hash": "contra",
+      "email": "diego@gmail.com",
+      "rol": false,
+      "created_at": "2025-07-07T21:37:22.801Z"
+    },
+    {
+      "id": "dce4",
+      "username": "Usuario2",
+      "password_hash": "123",
+      "email": "usuario@gmail.com",
+      "rol": true,
+      "created_at": "2025-07-07T22:23:03.270Z"
+    },
+    {
+      "id": "2888",
+      "username": "Sebastian Palacios",
+      "password_hash": "Contraseña",
+      "email": "sebpalacios@gmail.com",
+      "rol": true,
+      "created_at": "2025-07-07T22:32:56.732Z"
+    },
+    {
+      "id": "4c0a",
+      "username": "Pepe",
+      "password_hash": "pepe",
+      "email": "pepe@gmail.com",
+      "rol": false,
+      "created_at": "2025-07-07T22:38:03.063Z"
     }
   ],
   "bonds": [
@@ -158,6 +190,30 @@
         }
       ],
       "created_at": "2025-07-07T04:37:24.160Z"
+    },
+    {
+      "id": "6dc4",
+      "nombre": "Fila",
+      "moneda": "PEN",
+      "usuario_id": "ba65",
+      "monto": 8000,
+      "tasa": 0.5,
+      "tipo_tasa": "nominal",
+      "capitalizacion": "mensual",
+      "plazo": 9,
+      "frecuencia": "semestral",
+      "amortizacion": "francesa",
+      "gracias_periodos": [
+        {
+          "tipo": "total",
+          "cantidad": 2
+        },
+        {
+          "tipo": "parcial",
+          "cantidad": 3
+        }
+      ],
+      "created_at": "2025-07-07T23:45:05.848Z"
     }
   ],
   "bond_configurations": [

@@ -12,11 +12,19 @@
       </div>
     </div>
     <nav class="navbar" v-else>
-      <span class="navbar-title">Dashboard Emisor</span>
+  <span class="navbar-title">
+    {{ usuario && usuario.rol ? 'Dashboard Emisor' : 'Dashboard Inversor' }}
+  </span>
       <div class="navbar-actions">
-        <button class="create-bond-btn" @click="$router.push('/emisor')">Dashboard</button>
-        <button class="create-bond-btn" @click="$router.push('/createbond')">Crear Bono</button>
-        <button class="logout-btn" @click="logout">Cerrar sesión</button>
+        <template v-if="usuario && usuario.rol">
+          <button class="create-bond-btn" @click="$router.push('/emisor')">Dashboard</button>
+          <button class="create-bond-btn" @click="$router.push('/createbond')">Crear Bono</button>
+          <button class="logout-btn" @click="logout">Cerrar sesión</button>
+        </template>
+        <template v-else>
+          <button class="create-bond-btn" @click="$router.push('/inversor')">Dashboard Inversor</button>
+          <button class="logout-btn" @click="logout">Cerrar sesión</button>
+        </template>
       </div>
     </nav>
     <transition name="fade-scale">
@@ -79,6 +87,7 @@ export default {
       bono: null,
       flujo: [],
       tcea: 0,
+      trea: 0, // nuevo
       duracion: 0,
       duracionModificada: 0,
       convexidad: 0,
@@ -129,7 +138,14 @@ export default {
     },
     indicadores() {
       return [
-        { label: 'TCEA', value: (this.tcea * 100).toFixed(2) + '%' },
+        {
+          label: 'TCEA',
+          value: this.usuario && this.usuario.rol ? (this.tcea * 100).toFixed(2) + '%' : '-'
+        },
+        {
+          label: 'TREA',
+          value: !this.usuario || !this.usuario.rol ? (this.trea * 100).toFixed(2) + '%' : '-'
+        },
         { label: 'Duración', value: this.duracion.toFixed(4) },
         { label: 'Duración Modificada', value: this.duracionModificada.toFixed(4) },
         { label: 'Convexidad', value: this.convexidad.toFixed(4) },
@@ -139,100 +155,105 @@ export default {
   },
   async mounted() {
     this.iniciarCarga();
-    const id = this.$route.params.id
-    const bonoRes = await fetch(`http://localhost:3000/bonds/${id}`)
-    this.bono = await bonoRes.json()
-    const configRes = await fetch(`http://localhost:3000/bond_configurations?bond_id=${id}`)
-    const configuraciones = await configRes.json()
-    const config = configuraciones.length ? configuraciones[0] : null
-    let tasaEfectivaAnual = this.bono.tasa / 100
-    if (this.bono.tipo_tasa === 'nominal' && config) {
-      const capFreq = this.frecuenciaMap[config.capitalization?.toLowerCase()] || 1
-      tasaEfectivaAnual = Math.pow(1 + (this.bono.tasa / 100) / capFreq, capFreq) - 1
+    const id = this.$route.params.id;
+    const bonoRes = await fetch(`http://localhost:3000/bonds/${id}`);
+    this.bono = await bonoRes.json();
+    this.usuario = JSON.parse(localStorage.getItem('usuarioActual'));
+    if (typeof this.usuario?.rol === 'string') {
+      this.usuario.rol = this.usuario.rol === 'true';
     }
-    this.calcularTodo(tasaEfectivaAnual)
+
+    const configRes = await fetch(`http://localhost:3000/bond_configurations?bond_id=${id}`);
+    const configuraciones = await configRes.json();
+    const config = configuraciones.length ? configuraciones[0] : null;
+
+    let tasaEfectivaAnual = this.bono.tasa / 100;
+    if (this.bono.tipo_tasa === 'nominal' && config) {
+      const capFreq = this.frecuenciaMap[config.capitalizacion?.toLowerCase()] || 1;
+      tasaEfectivaAnual = Math.pow(1 + (this.bono.tasa / 100) / capFreq, capFreq) - 1;
+    }
+
+    this.calcularTodo(tasaEfectivaAnual);
   },
   beforeUnmount() {
-    clearInterval(this.barraInterval)
+    clearInterval(this.barraInterval);
   },
   methods: {
     iniciarCarga() {
-      this.barraProgreso = 0
+      this.barraProgreso = 0;
       this.barraInterval = setInterval(() => {
         if (this.barraProgreso < 100) {
-          this.barraProgreso += 100 / 30
-          if (this.barraProgreso > 100) this.barraProgreso = 100
+          this.barraProgreso += 100 / 30;
+          if (this.barraProgreso > 100) this.barraProgreso = 100;
         }
         if (this.barraProgreso >= 100) {
-          this.loading = false
-          clearInterval(this.barraInterval)
+          this.loading = false;
+          clearInterval(this.barraInterval);
         }
-      }, 100)
+      }, 100);
     },
-    calcularTodo(tasaEfectivaAnual) {
-      const { monto, plazo, frecuencia, gracias_periodos } = this.bono
-      const frecuenciaMeses = this.frecuenciaMap[frecuencia.toLowerCase()]
-      const n_periodos = plazo * (12 / frecuenciaMeses)
-      const i_periodo = Math.pow(1 + tasaEfectivaAnual, frecuenciaMeses / 12) - 1
 
-      // Construir la secuencia de periodos de gracia respetando el orden
-      let graciaSecuencia = []
+    calcularTodo(tasaEfectivaAnual) {
+      const { monto, plazo, frecuencia, gracias_periodos } = this.bono;
+      const frecuenciaMeses = this.frecuenciaMap[frecuencia.toLowerCase()];
+      const n_periodos = plazo * (12 / frecuenciaMeses);
+      const i_periodo = Math.pow(1 + tasaEfectivaAnual, frecuenciaMeses / 12) - 1;
+
+      let graciaSecuencia = [];
       if (gracias_periodos && gracias_periodos.length) {
         gracias_periodos.forEach(gp => {
           for (let i = 0; i < gp.cantidad; i++) {
-            graciaSecuencia.push(gp.tipo)
+            graciaSecuencia.push(gp.tipo);
           }
-        })
+        });
       }
       while (graciaSecuencia.length < n_periodos) {
-        graciaSecuencia.push('ninguna')
+        graciaSecuencia.push('ninguna');
       }
 
-      // Búsqueda binaria para encontrar la cuota que deja saldo final ≈ 0
-      let cuotaMin = 0, cuotaMax = monto * 2, cuota = 0
+      let cuotaMin = 0, cuotaMax = monto * 2, cuota = 0;
       for (let iter = 0; iter < 100; iter++) {
-        cuota = (cuotaMin + cuotaMax) / 2
-        let saldo = monto
+        cuota = (cuotaMin + cuotaMax) / 2;
+        let saldo = monto;
         for (let periodo = 1; periodo <= n_periodos; periodo++) {
-          const tipoGracia = graciaSecuencia[periodo - 1]
-          let interes = saldo * i_periodo
-          let amortizacion = 0
+          const tipoGracia = graciaSecuencia[periodo - 1];
+          let interes = saldo * i_periodo;
+          let amortizacion = 0;
 
           if (tipoGracia === 'total') {
-            interes = 0
-            amortizacion = 0
+            interes = 0;
+            amortizacion = 0;
           } else if (tipoGracia === 'parcial') {
-            amortizacion = 0
+            amortizacion = 0;
           } else {
-            amortizacion = cuota - interes
+            amortizacion = cuota - interes;
           }
-          saldo -= amortizacion
+          saldo -= amortizacion;
         }
-        if (Math.abs(saldo) < 0.01) break
-        if (saldo > 0) cuotaMin = cuota
-        else cuotaMax = cuota
+        if (Math.abs(saldo) < 0.01) break;
+        if (saldo > 0) cuotaMin = cuota;
+        else cuotaMax = cuota;
       }
 
-      // Ahora sí, genera el flujo real con la cuota encontrada
-      let saldo = monto
-      const flujosValores = []
-      this.flujo = []
+      let saldo = monto;
+      const flujosValores = [];
+      this.flujo = [];
       for (let periodo = 1; periodo <= n_periodos; periodo++) {
-        const tipoGracia = graciaSecuencia[periodo - 1]
-        let interes = saldo * i_periodo
-        let amortizacion = 0
-        let cuotaPagar = 0
+        const tipoGracia = graciaSecuencia[periodo - 1];
+        let interes = saldo * i_periodo;
+        let amortizacion = 0;
+        let cuotaPagar = 0;
 
         if (tipoGracia === 'total') {
-          interes = 0
-          amortizacion = 0
-          cuotaPagar = 0
+          interes = 0;
+          amortizacion = 0;
+          cuotaPagar = 0;
         } else if (tipoGracia === 'parcial') {
-          amortizacion = 0
-          cuotaPagar = interes
+          amortizacion = 0;
+          cuotaPagar = interes;
         } else {
-          amortizacion = cuota - interes
-          cuotaPagar = cuota
+          amortizacion = cuota - interes;
+          cuotaPagar = cuota;
         }
 
         this.flujo.push({
@@ -241,51 +262,75 @@ export default {
           interes,
           amortizacion,
           saldo: Math.max(saldo - amortizacion, 0)
-        })
+        });
 
-        flujosValores.push(cuotaPagar)
-        saldo -= amortizacion
+        flujosValores.push(cuotaPagar);
+        saldo -= amortizacion;
       }
 
-      this.calcularTCEA(flujosValores, i_periodo, n_periodos, frecuenciaMeses)
-      this.calcularDuracionYConvexidad(flujosValores, i_periodo, n_periodos, frecuenciaMeses)
-      this.precioMaximo = Math.max(...flujosValores)
+      if (this.usuario && this.usuario.rol) {
+        this.calcularTCEA(flujosValores, n_periodos, frecuenciaMeses);
+      } else {
+        this.calcularTREA(flujosValores, n_periodos, frecuenciaMeses);
+      }
+
+      this.calcularDuracionYConvexidad(flujosValores, i_periodo, n_periodos, frecuenciaMeses);
+      this.precioMaximo = Math.max(...flujosValores);
     },
-    calcularTCEA(flujo, i_periodo, n_periodos, frecuenciaMeses) {
-      let r = 0.1, vpn = 0, intentos = 0
+
+    calcularTCEA(flujo, n_periodos, frecuenciaMeses) {
+      let r = 0.1, vpn = 0, intentos = 0;
       do {
-        vpn = 0
+        vpn = -this.bono.monto;
         for (let i = 1; i <= n_periodos; i++) {
-          vpn += flujo[i - 1] / Math.pow(1 + r, i)
+          vpn += flujo[i - 1] / Math.pow(1 + r, i);
         }
-        r += vpn > 0 ? 0.001 : -0.001
-        intentos++
-        if (intentos > 10000) break
-      } while (Math.abs(vpn) > 0.01)
-      this.tcea = Math.pow(1 + r, frecuenciaMeses / 12) - 1
+        r += vpn > 0 ? 0.001 : -0.001;
+        intentos++;
+        if (intentos > 10000) break;
+      } while (Math.abs(vpn) > 0.01);
+      this.tcea = Math.pow(1 + r, 12 / frecuenciaMeses) - 1;
     },
+
+    calcularTREA(flujo, n_periodos, frecuenciaMeses) {
+      let r = 0.1, vpn = 0, intentos = 0;
+      do {
+        vpn = -this.bono.monto;
+        for (let i = 1; i <= n_periodos; i++) {
+          vpn += flujo[i - 1] / Math.pow(1 + r, i);
+        }
+        r += vpn > 0 ? 0.001 : -0.001;
+        intentos++;
+        if (intentos > 10000) break;
+      } while (Math.abs(vpn) > 0.01);
+      this.trea = Math.pow(1 + r, 12 / frecuenciaMeses) - 1;
+    },
+
+
     calcularDuracionYConvexidad(flujo, tasa, n_periodos, frecuenciaMeses) {
-      let dur = 0, conv = 0
-      const valor_comercial = flujo.reduce((acum, f, i) => acum + f / Math.pow(1 + tasa, i + 1), 0)
+      let dur = 0, conv = 0;
+      const valor_comercial = flujo.reduce((acum, f, i) => acum + f / Math.pow(1 + tasa, i + 1), 0);
 
       for (let i = 1; i <= n_periodos; i++) {
-        const t = i * frecuenciaMeses / 360
-        const flujo_act = flujo[i - 1] / Math.pow(1 + tasa, i)
-        dur += t * flujo_act
-        conv += t * (t + 1) * flujo_act
+        const t = i * frecuenciaMeses / 360;
+        const flujo_act = flujo[i - 1] / Math.pow(1 + tasa, i);
+        dur += t * flujo_act;
+        conv += t * (t + 1) * flujo_act;
       }
 
-      this.duracion = dur / valor_comercial
-      this.duracionModificada = this.duracion / (1 + tasa)
-      this.convexidad = conv / (valor_comercial * Math.pow(1 + tasa, 2))
+      this.duracion = dur / valor_comercial;
+      this.duracionModificada = this.duracion / (1 + tasa);
+      this.convexidad = conv / (valor_comercial * Math.pow(1 + tasa, 2));
     },
+
     logout() {
-      localStorage.removeItem('usuarioActual')
-      this.$router.push('/login')
+      localStorage.removeItem('usuarioActual');
+      this.$router.push('/login');
     }
   }
 }
 </script>
+
 
 <style scoped>
 .calculo-page {
