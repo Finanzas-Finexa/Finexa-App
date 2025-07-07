@@ -38,7 +38,7 @@ export default {
           }))
           alert(`Bienvenido, ${user.username}`)
           if (user.rol) {
-            this.$router.push('/bonista')
+            this.$router.push('/emisor')
           } else {
             this.$router.push('/inversor')
           }

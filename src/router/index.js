@@ -6,15 +6,17 @@ import DashboardPrestamista from '../views/dashboardprestamista.vue'
 import DashboardPrestatario from '../views/dashboardprestatario.vue'
 import Createbond from "@/views/createbond.vue";
 import resultsemisor from "@/views/resultsemisor.vue";
+import editbond from "@/views/editbond.vue";
 
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: Login },
   { path: '/register', component: Register },
-  { path: '/bonista', component: DashboardPrestamista },
+  { path: '/emisor', component: DashboardPrestamista },
   { path: '/inversor', component: DashboardPrestatario },
   { path: '/createbond', component: Createbond },
-  { path: '/resultemisor/:id', component: resultsemisor, props: true }
+  { path: '/resultemisor/:id', component: resultsemisor, props: true },
+  { path: '/editbond/:id', component: editbond, props: true }
 
 ]
 

@@ -36,71 +36,128 @@
   ],
   "bonds": [
     {
-      "id": "326b",
-      "nombre": "Bono 2",
-      "moneda": "EUR",
-      "monto": 25000,
-      "tasa": 3,
+      "nombre": "Bono hola",
+      "moneda": "PEN",
+      "monto": 2500,
+      "tasa": 13,
       "tipo_tasa": "nominal",
-      "capitalizacion": "trimestral",
+      "capitalizacion": "cuatrimestral",
       "plazo": 9,
-      "frecuencia": "trimestral",
+      "frecuencia": "mensual",
       "amortizacion": "francesa",
-      "gracia": "parcial",
-      "gracia_periodos": 3,
-      "gracias_periodos": [
-        {
-          "tipo": "total",
-          "cantidad": 2
-        }
-      ],
-      "created_at": "2025-07-06T01:44:20.872Z"
+      "gracias_periodos": [],
+      "id": "76c4"
     },
     {
-      "id": "8976",
-      "nombre": "Bono 3",
-      "moneda": "USD",
-      "monto": 10500,
-      "tasa": 4,
-      "tipo_tasa": "nominal",
-      "capitalizacion": "semestral",
-      "plazo": 7,
+      "nombre": "Momazos Diego",
+      "moneda": "PEN",
+      "usuario_id": "ba65",
+      "monto": 53000,
+      "tasa": 7,
+      "tipo_tasa": "efectiva",
+      "capitalizacion": null,
+      "plazo": 14,
       "frecuencia": "anual",
       "amortizacion": "francesa",
-      "gracia": "parcial",
-      "gracia_periodos": 3,
       "gracias_periodos": [
-        {
-          "tipo": "total",
-          "cantidad": 3
-        },
         {
           "tipo": "parcial",
           "cantidad": 5
         }
       ],
-      "created_at": "2025-07-06T02:02:26.861Z"
+      "id": "cd14"
     },
     {
-      "id": "5d2a",
-      "nombre": "Christian",
+      "id": "4f7d",
+      "nombre": "Momazos Diego 2",
+      "moneda": "USD",
+      "usuario_id": "ba65",
+      "monto": 1000,
+      "tasa": 2,
+      "tipo_tasa": "nominal",
+      "capitalizacion": "anual",
+      "plazo": 10,
+      "frecuencia": "anual",
+      "amortizacion": "francesa",
+      "gracias_periodos": [
+        {
+          "tipo": "total",
+          "cantidad": 1
+        },
+        {
+          "tipo": "parcial",
+          "cantidad": 1
+        }
+      ],
+      "created_at": "2025-07-07T04:07:18.958Z"
+    },
+    {
+      "id": "cc3d",
+      "nombre": "Bono prueba",
       "moneda": "PEN",
-      "monto": 23,
-      "tasa": 3,
+      "usuario_id": "ba65",
+      "monto": 50,
+      "tasa": 5,
       "tipo_tasa": "efectiva",
       "capitalizacion": null,
-      "plazo": 3,
-      "frecuencia": "cuatrimestral",
+      "plazo": 6,
+      "frecuencia": "anual",
       "amortizacion": "francesa",
-      "gracia": "parcial",
-      "gracia_periodos": 3,
+      "gracias_periodos": [
+        {
+          "tipo": "total",
+          "cantidad": 3
+        }
+      ],
+      "created_at": "2025-07-07T04:18:08.769Z"
+    },
+    {
+      "id": "9944",
+      "nombre": "Jose",
+      "moneda": "EUR",
+      "usuario_id": "ba65",
+      "monto": 10500,
+      "tasa": 14,
+      "tipo_tasa": "nominal",
+      "capitalizacion": "cuatrimestral",
+      "plazo": 9,
+      "frecuencia": "semestral",
+      "amortizacion": "francesa",
       "gracias_periodos": [
         {
           "tipo": "parcial",
-          "cantidad": 4
+          "cantidad": 2
+        },
+        {
+          "tipo": "total",
+          "cantidad": 2
         }
       ],
-      "created_at": "2025-07-06T04:16:44.723Z"
+      "created_at": "2025-07-07T04:19:58.583Z"
+    },
+    {
+      "id": "6104",
+      "nombre": "Maria",
+      "moneda": "PEN",
+      "usuario_id": "ba65",
+      "monto": 10000,
+      "tasa": 8,
+      "tipo_tasa": "efectiva",
+      "capitalizacion": null,
+      "plazo": 5,
+      "frecuencia": "anual",
+      "amortizacion": "francesa",
+      "gracias_periodos": [
+        {
+          "tipo": "parcial",
+          "cantidad": 1
+        },
+        {
+          "tipo": "total",
+          "cantidad": 1
+        }
+      ],
+      "created_at": "2025-07-07T04:37:24.160Z"
     }
   ],
   "bond_configurations": [

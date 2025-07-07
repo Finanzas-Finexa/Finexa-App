@@ -1,15 +1,15 @@
 <template>
   <div class="dashboard-bg">
     <nav class="navbar">
-      <span class="navbar-title">Dashboard Bonista</span>
+      <span class="navbar-title">Dashboard Emisor</span>
       <div class="navbar-actions">
-        <button class="create-bond-btn" @click="$router.push('/bonista')">Dashboard</button>
+        <button class="create-bond-btn" @click="$router.push('/emisor')">Dashboard</button>
         <button class="create-bond-btn" @click="$router.push('/createbond')">Crear Bono</button>
         <button class="logout-btn" @click="logout">Cerrar sesión</button>
       </div>
     </nav>
     <div class="dashboard-content">
-      <h2>Bienvenido, Bonista</h2>
+      <h2>Bienvenido, Emisor</h2>
       <div class="table-container">
         <table class="bonos-table">
           <thead>
@@ -40,6 +40,7 @@
             <td class="acciones-cell">
               <div class="acciones-btns">
                 <button class="calculate-btn" @click="$router.push(`/resultemisor/${bono.id}`)">Calcular</button>
+                <button class="edit-btn" @click="$router.push(`/editbond/${bono.id}`)">Editar</button>
                 <button class="delete-btn" @click="eliminarBono(bono.id)">Eliminar</button>
               </div>
             </td>
@@ -65,8 +66,11 @@ export default {
   methods: {
     async cargarBonos() {
       try {
+        const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'))
+        const usuarioId = usuarioActual?.id || usuarioActual?.usuario_id
         const res = await fetch('http://localhost:3000/bonds')
-        this.bonos = await res.json()
+        const todos = await res.json()
+        this.bonos = todos.filter(b => b.usuario_id === usuarioId)
       } catch (e) {
         this.bonos = []
       }
@@ -236,6 +240,19 @@ export default {
 .dashboard-content p {
   font-size: 1.2rem;
 }
+.edit-btn {
+  background: #fbc02d;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.edit-btn:hover {
+  background: #f9a825;
+}
 @media (max-width: 900px) {
   .table-container {
     padding: 0.5rem;
@@ -273,5 +290,6 @@ export default {
   .dashboard-content p {
     font-size: 1rem;
   }
+
 }
 </style>

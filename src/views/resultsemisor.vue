@@ -12,9 +12,9 @@
       </div>
     </div>
     <nav class="navbar" v-else>
-      <span class="navbar-title">Dashboard Bonista</span>
+      <span class="navbar-title">Dashboard Emisor</span>
       <div class="navbar-actions">
-        <button class="create-bond-btn" @click="$router.push('/bonista')">Dashboard</button>
+        <button class="create-bond-btn" @click="$router.push('/emisor')">Dashboard</button>
         <button class="create-bond-btn" @click="$router.push('/createbond')">Crear Bono</button>
         <button class="logout-btn" @click="logout">Cerrar sesión</button>
       </div>
@@ -99,6 +99,11 @@ export default {
   computed: {
     infoBlocks() {
       if (!this.bono) return [];
+      const graciaStr = (this.bono.gracias_periodos && this.bono.gracias_periodos.length)
+          ? this.bono.gracias_periodos
+              .map(gp => `${gp.tipo.charAt(0).toUpperCase() + gp.tipo.slice(1)} (${gp.cantidad})`)
+              .join(', ')
+          : '-';
       return [
         {
           title: 'Datos del Bono',
@@ -117,7 +122,7 @@ export default {
             { label: 'Frecuencia', value: this.bono.frecuencia },
             { label: 'Capitalización', value: this.bono.capitalizacion || '-' },
             { label: 'Amortización', value: this.bono.amortizacion },
-            { label: 'Gracia', value: this.bono.gracia }
+            { label: 'Gracia', value: graciaStr }
           ]
         }
       ]
@@ -169,35 +174,77 @@ export default {
       const frecuenciaMeses = this.frecuenciaMap[frecuencia.toLowerCase()]
       const n_periodos = plazo * (12 / frecuenciaMeses)
       const i_periodo = Math.pow(1 + tasaEfectivaAnual, frecuenciaMeses / 12) - 1
-      const cuota = monto * (i_periodo / (1 - Math.pow(1 + i_periodo, -n_periodos)))
 
+      // Construir la secuencia de periodos de gracia respetando el orden
+      let graciaSecuencia = []
+      if (gracias_periodos && gracias_periodos.length) {
+        gracias_periodos.forEach(gp => {
+          for (let i = 0; i < gp.cantidad; i++) {
+            graciaSecuencia.push(gp.tipo)
+          }
+        })
+      }
+      while (graciaSecuencia.length < n_periodos) {
+        graciaSecuencia.push('ninguna')
+      }
+
+      // Búsqueda binaria para encontrar la cuota que deja saldo final ≈ 0
+      let cuotaMin = 0, cuotaMax = monto * 2, cuota = 0
+      for (let iter = 0; iter < 100; iter++) {
+        cuota = (cuotaMin + cuotaMax) / 2
+        let saldo = monto
+        for (let periodo = 1; periodo <= n_periodos; periodo++) {
+          const tipoGracia = graciaSecuencia[periodo - 1]
+          let interes = saldo * i_periodo
+          let amortizacion = 0
+
+          if (tipoGracia === 'total') {
+            interes = 0
+            amortizacion = 0
+          } else if (tipoGracia === 'parcial') {
+            amortizacion = 0
+          } else {
+            amortizacion = cuota - interes
+          }
+          saldo -= amortizacion
+        }
+        if (Math.abs(saldo) < 0.01) break
+        if (saldo > 0) cuotaMin = cuota
+        else cuotaMax = cuota
+      }
+
+      // Ahora sí, genera el flujo real con la cuota encontrada
       let saldo = monto
       const flujosValores = []
       this.flujo = []
-
-      let totalGracia = 0, parcialGracia = 0
-      gracias_periodos?.forEach(p => {
-        if (p.tipo === 'total') totalGracia += p.cantidad
-        else if (p.tipo === 'parcial') parcialGracia += p.cantidad
-      })
-
       for (let periodo = 1; periodo <= n_periodos; periodo++) {
+        const tipoGracia = graciaSecuencia[periodo - 1]
         let interes = saldo * i_periodo
-        let amortizacion = cuota - interes
+        let amortizacion = 0
+        let cuotaPagar = 0
 
-        if (periodo <= totalGracia) {
-          this.flujo.push({ periodo, cuota: 0, interes: 0, amortizacion: 0, saldo })
-          flujosValores.push(0)
-          continue
-        } else if (periodo <= totalGracia + parcialGracia) {
-          this.flujo.push({ periodo, cuota: interes, interes, amortizacion: 0, saldo })
-          flujosValores.push(interes)
-          continue
+        if (tipoGracia === 'total') {
+          interes = 0
+          amortizacion = 0
+          cuotaPagar = 0
+        } else if (tipoGracia === 'parcial') {
+          amortizacion = 0
+          cuotaPagar = interes
+        } else {
+          amortizacion = cuota - interes
+          cuotaPagar = cuota
         }
 
+        this.flujo.push({
+          periodo,
+          cuota: cuotaPagar,
+          interes,
+          amortizacion,
+          saldo: Math.max(saldo - amortizacion, 0)
+        })
+
+        flujosValores.push(cuotaPagar)
         saldo -= amortizacion
-        this.flujo.push({ periodo, cuota, interes, amortizacion, saldo: Math.max(saldo, 0) })
-        flujosValores.push(cuota)
       }
 
       this.calcularTCEA(flujosValores, i_periodo, n_periodos, frecuenciaMeses)

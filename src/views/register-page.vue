@@ -19,7 +19,7 @@
           <label>Tipo de cuenta:</label>
           <select v-model="tipo" required class="input">
             <option disabled value="">Selecciona tipo de usuario</option>
-            <option value="Bonista">Bonista</option>
+            <option value="Emisor">Emisor</option>
             <option value="Inversor">Inversor</option>
           </select>
         </div>
@@ -51,7 +51,7 @@ export default {
         return
       }
       // Mapea el tipo a rol booleano
-      const rol = this.tipo === 'Bonista'
+      const rol = this.tipo === 'Emisor'
       const nuevoUsuario = {
         username: this.usuario,
         password_hash: this.contrasena,

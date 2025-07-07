@@ -1,9 +1,9 @@
 <template>
   <div class="crear-bono-bg">
     <nav class="navbar">
-      <span class="navbar-title">Dashboard Bonista</span>
+      <span class="navbar-title">Dashboard Emisor</span>
       <div class="navbar-actions">
-        <Button label="Dashboard" class="p-button-success create-bond-btn" @click="$router.push('/bonista')" />
+        <Button label="Dashboard" class="p-button-success create-bond-btn" @click="$router.push('/emisor')" />
         <Button label="Crear Bono" class="p-button-success create-bond-btn" @click="$router.push('/createbond')" />
         <Button label="Cerrar sesión" class="p-button-secondary logout-btn" @click="logout" />
       </div>
@@ -90,7 +90,6 @@ export default {
       capitalizacion: 'anual',
       plazo: null,
       frecuencia: 'anual',
-      gracia: 'ninguna',
       error: '',
       exito: '',
       monedas: [
@@ -140,10 +139,6 @@ export default {
         this.error = 'Completa todos los campos obligatorios.'
         return
       }
-      if (this.gracia !== 'ninguna' && (!this.graciaPeriodos || this.graciaPeriodos < 1)) {
-        this.error = 'Indica la cantidad de periodos de gracia.'
-        return
-      }
       for (const gp of this.graciasPeriodos) {
         if (gp.tipo === 'ninguna') continue
         if (!gp.cantidad || gp.cantidad < 1) {
@@ -151,9 +146,12 @@ export default {
           return
         }
       }
+      const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'))
+      const usuarioId = usuarioActual?.id || usuarioActual?.usuario_id
       const nuevoBono = {
         nombre: this.nombre,
         moneda: this.moneda,
+        usuario_id: usuarioId,
         monto: Number(this.monto),
         tasa: Number(this.tasa),
         tipo_tasa: this.tipoTasa,
@@ -161,8 +159,6 @@ export default {
         plazo: Number(this.plazo),
         frecuencia: this.frecuencia,
         amortizacion: 'francesa',
-        gracia: this.gracia,
-        gracia_periodos: this.gracia !== 'ninguna' ? Number(this.graciaPeriodos) : 0,
         gracias_periodos: this.graciasPeriodos.filter(gp => gp.tipo !== 'ninguna'),
         created_at: new Date().toISOString()
       }
@@ -173,7 +169,7 @@ export default {
           body: JSON.stringify(nuevoBono)
         })
         this.exito = '✅ Bono creado exitosamente.'
-        setTimeout(() => this.$router.push('/bonista'), 1000)
+        setTimeout(() => this.$router.push('/emisor'), 1000)
       } catch (e) {
         this.error = '❌ Error al crear el bono.'
       }
