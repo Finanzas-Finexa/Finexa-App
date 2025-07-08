@@ -137,22 +137,33 @@ export default {
       ]
     },
     indicadores() {
-      return [
-        {
+      const resultado = [];
+
+      if (this.usuario && this.usuario.rol) {
+        // Emisor → mostrar TCEA
+        resultado.push({
           label: 'TCEA',
-          value: this.usuario && this.usuario.rol ? (this.tcea * 100).toFixed(2) + '%' : '-'
-        },
-        {
+          value: (this.tcea * 100).toFixed(2) + '%'
+        });
+      } else {
+        // Inversionista → mostrar TREA
+        resultado.push({
           label: 'TREA',
-          value: !this.usuario || !this.usuario.rol ? (this.trea * 100).toFixed(2) + '%' : '-'
-        },
-        { label: 'Duración', value: this.duracion.toFixed(4) },
-        { label: 'Duración Modificada', value: this.duracionModificada.toFixed(4) },
-        { label: 'Convexidad', value: this.convexidad.toFixed(4) },
-        { label: 'Precio Máximo', value: this.precioMaximo.toFixed(2) }
-      ]
+          value: (this.trea * 100).toFixed(2) + '%'
+        });
+      }
+
+      resultado.push(
+          { label: 'Duración', value: this.duracion.toFixed(4) },
+          { label: 'Duración Modificada', value: this.duracionModificada.toFixed(4) },
+          { label: 'Convexidad', value: this.convexidad.toFixed(4) },
+          { label: 'Precio Máximo', value: this.precioMaximo.toFixed(2) }
+      );
+
+      return resultado;
     }
   },
+
   async mounted() {
     this.iniciarCarga();
     const id = this.$route.params.id;

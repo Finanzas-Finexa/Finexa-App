@@ -3,7 +3,7 @@
     <div class="login-card">
       <h2>Iniciar sesión</h2>
       <form @submit.prevent="login">
-        <InputText v-model="email" placeholder="Correo electrónico" class="input" type="email" />        <Password v-model="contrasena" placeholder="Contraseña" class="input" toggleMask />
+        <InputText v-model="email" placeholder="Correo electrónico" class="input" type="email" />        <Password v-model="contrasena" placeholder="Contraseña" class="input" toggleMask :feedback="false" />
         <Button label="Ingresar" type="submit" class="login-btn" />
       </form>
       <router-link to="/register" class="register-link">¿No tienes cuenta? Regístrate</router-link>

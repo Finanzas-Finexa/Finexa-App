@@ -9,7 +9,7 @@
         </div>
         <div class="form-group">
           <label>Contraseña:</label>
-          <input v-model="contrasena" type="password" placeholder="Contraseña" required class="input" />
+          <Password v-model="contrasena" placeholder="Contraseña" class="input" toggleMask />
         </div>
         <div class="form-group">
           <label>Email:</label>
@@ -31,7 +31,10 @@
 </template>
 
 <script>
+import Password from 'primevue/password'
 export default {
+  components: { Password },
+
   data() {
     return {
       usuario: '',
